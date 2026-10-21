@@ -93,13 +93,18 @@ class Palette
     public function cssVariables(): string
     {
         $lines = [];
+        $scale = $this->toArray();
 
-        foreach ($this->toArray() as $step => $value) {
+        foreach ($scale as $step => $value) {
             $lines[] = "--color-brand-{$step}:{$value}";
         }
 
         $lines[] = '--brand-contrast:'.$this->contrast();
         $lines[] = '--brand-rgb:'.$this->rgbTriplet();
+
+        $darkText = $this->contrast() === '#ffffff' ? $scale[200] : $scale[300];
+        $lines[] = '--brand-text-dark:'.$darkText;
+        $lines[] = '--brand-text-light:'.$scale[600];
 
         return implode(';', $lines).';';
     }

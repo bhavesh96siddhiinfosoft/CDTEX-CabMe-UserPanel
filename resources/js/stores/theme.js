@@ -5,8 +5,7 @@ Alpine.store('theme', {
     current: 'light',
 
     init() {
-        this.current = localStorage.getItem('cabme_theme')
-            || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        this.current = localStorage.getItem('cabme_theme') === 'dark' ? 'dark' : 'light';
         this.apply();
     },
 

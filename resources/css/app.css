@@ -34,6 +34,7 @@
 :root {
     --brand-contrast: #ffffff;
     --brand-rgb: 217, 38, 98;
+    --brand-text: var(--brand-text-light, var(--color-brand-600));
 
     --surface:        #ffffff;
     --surface-muted:  #f4f5f7;
@@ -68,6 +69,7 @@
     --border-strong:  #333945;
     --text:           #f5f6f8;
     --text-muted:     #98a2b3;
+    --brand-text:     var(--brand-text-dark, var(--color-brand-200));
 
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
     --shadow-md: 0 4px 8px -2px rgb(0 0 0 / 0.5);
@@ -274,9 +276,35 @@
 
 @utility label { @apply block text-sm font-medium mb-1.5; }
 
-@utility brand-text { color: var(--color-brand-600); }
+@utility brand-text { color: var(--brand-text, var(--color-brand-600)); }
 @utility brand-bg { background-color: var(--color-brand-600); color: var(--brand-contrast); }
 @utility brand-tint { background-color: rgb(var(--brand-rgb) / 0.1); }
+
+[data-theme="dark"] .brand-text {
+    color: var(--brand-text-dark, var(--color-brand-200)) !important;
+}
+
+[data-theme="dark"] .brand-tint {
+    background-color: rgb(var(--brand-rgb) / 0.28) !important;
+    border: 1px solid rgb(var(--brand-rgb) / 0.45);
+}
+
+[data-theme="dark"] .btn-primary {
+    border: 1px solid rgb(255 255 255 / 0.18);
+}
+
+[data-theme="dark"] .btn-primary:disabled {
+    background-color: var(--surface-raised) !important;
+    color: var(--text-muted) !important;
+    border-color: var(--border-strong) !important;
+    opacity: 0.7 !important;
+}
+
+[data-theme="dark"] .btn-soft {
+    color: var(--brand-text-dark, var(--color-brand-200)) !important;
+    background-color: rgb(var(--brand-rgb) / 0.28) !important;
+    border-color: rgb(var(--brand-rgb) / 0.5) !important;
+}
 
 /* Status pills — one per admin `statut` value. */
 @utility badge {

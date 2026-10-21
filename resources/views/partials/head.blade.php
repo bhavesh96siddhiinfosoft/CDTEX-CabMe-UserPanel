@@ -19,8 +19,7 @@
 <script>
     (function () {
         var stored = localStorage.getItem('cabme_theme');
-        var dark = stored ? stored === 'dark'
-            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var dark = stored === 'dark';
         document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
     })();
 </script>
