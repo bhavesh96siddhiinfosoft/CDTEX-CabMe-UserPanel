@@ -1,0 +1,483 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+| CabMe design tokens
+|
+| The brand scale below is only a fallback. At runtime the layout injects a
+| `:root` block derived from the colour set in the admin's Web Settings screen
+| (see App\Support\Palette), which overrides these. Tailwind 4 compiles
+| `bg-brand-600` to `var(--color-brand-600)`, so re-theming needs no rebuild.
+*/
+@theme {
+    /* Two families on purpose. A heading and the line under it were the same
+       typeface at two sizes, which is why they read as one block however the
+       size and weight were tuned. Headings are set in Plus Jakarta Sans,
+       everything else — body, blurbs, labels — in Inter. */
+    --font-sans:    'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-display: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    --color-brand-50:  #fdf2f6;
+    --color-brand-100: #fce7ef;
+    --color-brand-200: #fbcfdf;
+    --color-brand-300: #f8a8c4;
+    --color-brand-400: #f2749f;
+    --color-brand-500: #e8447d;
+    --color-brand-600: #d92662;
+    --color-brand-700: #bb1a4e;
+    --color-brand-800: #9b1943;
+    --color-brand-900: #82193c;
+}
+
+:root {
+    --brand-contrast: #ffffff;
+    --brand-rgb: 217, 38, 98;
+
+    --surface:        #ffffff;
+    --surface-muted:  #f4f5f7;
+    --surface-raised: #ffffff;
+    --surface-sunken: #eceef1;
+    --border:         #e4e7ec;
+    --border-strong:  #d0d5dd;
+    --text:           #1a1a1a;
+    --text-muted:     #6b7280;
+
+    --ring: 0 0 0 4px rgb(var(--brand-rgb) / 0.14);
+    --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.05);
+    --shadow-md: 0 4px 8px -2px rgb(16 24 40 / 0.08), 0 2px 4px -2px rgb(16 24 40 / 0.04);
+    --shadow-lg: 0 12px 16px -4px rgb(16 24 40 / 0.08), 0 4px 6px -2px rgb(16 24 40 / 0.03);
+    --shadow-xl: 0 24px 48px -12px rgb(16 24 40 / 0.18);
+
+    /* Destructive actions. The tint is the same either way; only the
+       label colour has to change to stay readable. */
+    --danger:     #e11d48;
+    --danger-rgb: 244 63 94;
+}
+
+[data-theme='dark'] {
+    color-scheme: dark;
+    /* A 600-weight rose is too dark to read on a dark card. */
+    --danger:         #fda4af;
+    --surface:        #0b0d12;
+    --surface-muted:  #12151c;
+    --surface-raised: #171b23;
+    --surface-sunken: #0e1116;
+    --border:         #252a34;
+    --border-strong:  #333945;
+    --text:           #f5f6f8;
+    --text-muted:     #98a2b3;
+
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-md: 0 4px 8px -2px rgb(0 0 0 / 0.5);
+    --shadow-lg: 0 12px 16px -4px rgb(0 0 0 / 0.55);
+    --shadow-xl: 0 24px 48px -12px rgb(0 0 0 / 0.7);
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+        /* Plain white (and plain near-black in dark): the old muted page
+           tone read as grey blocks behind the cards. */
+        background-color: var(--surface);
+        color: var(--text);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+
+    h1, h2, h3, h4 {
+        font-family: var(--font-display);
+        letter-spacing: -0.025em;
+    }
+
+    [type='text'], [type='email'], [type='password'], [type='number'],
+    [type='tel'], [type='date'], [type='time'], [type='search'], [type='url'],
+    select, textarea {
+        background-color: var(--surface-raised);
+        border-color: var(--border-strong);
+        color: var(--text);
+        border-radius: 0.75rem;
+        font-size: 0.9375rem;
+        padding: 0.625rem 0.875rem;
+        transition: border-color .15s, box-shadow .15s;
+    }
+
+    [type='text']:focus, [type='email']:focus, [type='password']:focus,
+    [type='number']:focus, [type='tel']:focus, [type='date']:focus,
+    [type='time']:focus, [type='search']:focus, [type='url']:focus,
+    select:focus, textarea:focus {
+        border-color: var(--color-brand-500);
+        outline: none;
+        box-shadow: var(--ring);
+    }
+
+    /* A native <select> opens a popup the BROWSER paints, not the page: the
+       options keep their default white background while inheriting the
+       select's colour, so in dark mode it is light grey text on white and
+       unreadable. Paint them with the same tokens as the field. */
+    option, optgroup {
+        background-color: var(--surface-raised);
+        color: var(--text);
+    }
+
+    /* @tailwindcss/forms wraps its input selectors in :where() — zero
+       specificity, so the rule above wins — but writes `textarea` and
+       `select` bare, and its sheet lands after ours. Those two alone were
+       left painted white, which only shows up in dark mode. One pseudo-class
+       is enough to take them back. */
+    :root textarea,
+    :root select {
+        background-color: var(--surface-raised);
+        border-color: var(--border-strong);
+        color: var(--text);
+    }
+    /* The calendar/clock buttons follow color-scheme now; just calm them
+       down so they read as affordances rather than content. */
+    ::-webkit-calendar-picker-indicator { opacity: 0.6; cursor: pointer; }
+    ::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+    /* The file picker's button is browser chrome too — give it the same
+       shape as the panel's own small buttons. */
+    ::-webkit-file-upload-button {
+        background-color: var(--surface-muted);
+        border: 1px solid var(--border-strong);
+        border-radius: 0.5rem;
+        color: var(--text);
+        cursor: pointer;
+        font-weight: 600;
+        margin-inline-end: 0.75rem;
+        padding: 0.35rem 0.75rem;
+    }
+
+    ::-webkit-file-upload-button:hover { border-color: var(--color-brand-500); }
+    ::placeholder { color: var(--text-muted); }
+
+    /* Keep conditional panels hidden until Alpine initialises. */
+    [x-cloak] { display: none !important; }
+
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb {
+        background: var(--border-strong);
+        border-radius: 999px;
+        border: 3px solid transparent;
+        background-clip: content-box;
+    }
+}
+
+/*
+| Utilities rather than @layer components: in Tailwind 4 only real utilities can
+| be composed with @apply or take a variant prefix, and these are used both ways.
+*/
+
+@utility muted-surface { background-color: var(--surface-muted); }
+@utility sunken-surface { background-color: var(--surface-sunken); }
+/* Secondary text. Never heavier than regular and never the heading's face:
+   the contrast comes from family, colour and line spacing, not from weight. */
+@utility faint {
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+}
+
+/* The line under a heading: same as .faint, with the roomier line spacing
+   body copy needs to read as a separate block. */
+@utility lede {
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    /* text-sm and friends resolve line-height through --tw-leading, so setting
+       both keeps the roomier spacing whichever utility the cascade picks. */
+    --tw-leading: 1.65;
+    line-height: 1.65;
+}
+
+/* Small caps label above or beside a value — in the brand colour, which is
+   what keeps it from looking like more grey body text. */
+@utility eyebrow {
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+}
+@utility border-token { border-color: var(--border); }
+
+@utility card {
+    background-color: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 1.125rem;
+    box-shadow: var(--shadow-sm);
+}
+
+@utility card-pad { @apply card p-5; }
+
+@utility btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5
+           text-sm font-semibold transition-all duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed;
+}
+
+@utility btn-primary {
+    @apply btn;
+    background-color: var(--color-brand-600);
+    color: var(--brand-contrast);
+    box-shadow: var(--shadow-sm);
+
+    &:hover:not(:disabled) {
+        background-color: var(--color-brand-700);
+        box-shadow: var(--shadow-md);
+    }
+    &:active:not(:disabled) { transform: translateY(1px); }
+}
+
+@utility btn-ghost {
+    @apply btn;
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    background-color: var(--surface-raised);
+
+    &:hover:not(:disabled) { background-color: var(--surface-muted); }
+}
+
+@utility btn-soft {
+    @apply btn;
+    /* A visible border and the darkest brand step keep this reading as a
+       button even when the brand colour is light (amber washed the old
+       10%-tint version out into what looked like plain text). */
+    background-color: rgb(var(--brand-rgb) / 0.14);
+    border: 1px solid rgb(var(--brand-rgb) / 0.45);
+    color: var(--color-brand-900);
+
+    &:hover:not(:disabled) { background-color: rgb(var(--brand-rgb) / 0.22); }
+}
+
+@utility btn-danger {
+    @apply btn;
+    /* Cancel and SOS were a bare rose-600 label on a ghost button, which on
+       a dark card read as disabled text rather than an action. */
+    background-color: rgb(var(--danger-rgb) / 0.12);
+    border: 1px solid rgb(var(--danger-rgb) / 0.40);
+    color: var(--danger);
+
+    &:hover:not(:disabled) { background-color: rgb(var(--danger-rgb) / 0.20); }
+    &:active:not(:disabled) { transform: translateY(1px); }
+}
+
+@utility btn-lg { @apply px-6 py-3.5 text-base rounded-2xl; }
+
+@utility label { @apply block text-sm font-medium mb-1.5; }
+
+@utility brand-text { color: var(--color-brand-600); }
+@utility brand-bg { background-color: var(--color-brand-600); color: var(--brand-contrast); }
+@utility brand-tint { background-color: rgb(var(--brand-rgb) / 0.1); }
+
+/* Status pills — one per admin `statut` value. */
+@utility badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1
+           text-xs font-semibold whitespace-nowrap;
+}
+
+@utility badge-new       { @apply badge bg-amber-100 text-amber-800     dark:bg-amber-500/15   dark:text-amber-300; }
+@utility badge-confirmed { @apply badge bg-blue-100 text-blue-800       dark:bg-blue-500/15    dark:text-blue-300; }
+@utility badge-onride    { @apply badge bg-violet-100 text-violet-800   dark:bg-violet-500/15  dark:text-violet-300; }
+@utility badge-completed { @apply badge bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300; }
+@utility badge-cancelled { @apply badge bg-rose-100 text-rose-800       dark:bg-rose-500/15    dark:text-rose-300; }
+@utility badge-neutral   { @apply badge muted-surface faint; }
+
+/*
+| Map-first app shell
+|
+| The booking and tracking screens are a full-viewport map with a sheet docked
+| over it: a left rail on desktop, a bottom sheet on mobile.
+*/
+
+/*
+| Locks the document for the map-first screens.
+|
+| `overflow: hidden` on <body> alone does not stop *programmatic* scrolling:
+| focusing a visually-hidden radio (the picker inputs) makes the browser reveal
+| it by scrolling the nearest scrollable ancestor, which dragged the whole page
+| up and left a blank half-screen below the shell. Pinning html and body removes
+| anywhere for that scroll to go.
+*/
+@utility shell-locked {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
+/*
+| Taking <body> out of flow leaves the document with no scrollable height at
+| all, so a focus-scroll has nowhere to go. `overflow: hidden` alone was not
+| enough — it hides the scrollbar but the element stays scrollable
+| programmatically, which is exactly what focusing a visually-hidden radio does.
+*/
+@utility shell-frame {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    overscroll-behavior: none;
+
+    /* The header keeps its own height; only the shell below it flexes. */
+    & > header {
+        flex: none;
+    }
+}
+
+/* Fills whatever height is left under the header — no dvh arithmetic needed. */
+@utility shell {
+    flex: 1 1 auto;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+@utility shell-map {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+@utility shell-sheet {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--surface-raised);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-xl);
+}
+
+/* Mobile: the sheet sits at the bottom and scrolls internally. */
+@media (max-width: 1023px) {
+    .shell-sheet {
+        position: absolute;
+        inset: auto 0 0 0;
+        max-height: 68%;
+        border-radius: 1.5rem 1.5rem 0 0;
+        border-bottom: 0;
+    }
+    .shell-sheet::before {
+        content: '';
+        display: block;
+        width: 2.5rem;
+        height: 0.25rem;
+        border-radius: 999px;
+        background: var(--border-strong);
+        margin: 0.625rem auto 0;
+        flex: none;
+    }
+}
+
+/* Desktop: a floating rail on the left, map visible behind and beside it. */
+@media (min-width: 1024px) {
+    .shell-sheet {
+        position: absolute;
+        inset: 1rem auto 1rem 1rem;
+        width: 25rem;
+        border-radius: 1.25rem;
+    }
+}
+
+@utility shell-sheet-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    /* Keep the sheet's own scrolling from chaining out to the document. */
+    overscroll-behavior: contain;
+    padding: 1.25rem;
+}
+
+@utility shell-sheet-foot {
+    flex: none;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background-color: var(--surface-raised);
+    border-radius: 0 0 1.25rem 1.25rem;
+}
+
+/* Route endpoint markers in the address list. */
+@utility dot-pickup {
+    @apply mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full;
+    background-color: #12b76a;
+    box-shadow: 0 0 0 3px rgb(18 183 106 / 0.18);
+}
+
+@utility dot-drop {
+    @apply mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full;
+    background-color: var(--color-brand-600);
+    box-shadow: 0 0 0 3px rgb(var(--brand-rgb) / 0.18);
+}
+
+/* intl-tel-input, restyled to match our inputs (and dark mode). */
+.iti { width: 100%; }
+.iti__country-container button { border-radius: 0.75rem 0 0 0.75rem; }
+.iti input[type='tel'] { width: 100%; }
+
+/* Theme intl-tel-input through ITS OWN variables (v29): the dropdown panel
+   is .iti__country-selector, painted by --iti-country-selector-bg (white by
+   default). Scoping to .iti / .iti--container beats the library's :root
+   defaults through inheritance, whatever the stylesheet order. */
+.iti,
+.iti--container {
+    --iti-country-selector-bg: var(--surface-raised);
+    --iti-border-color: var(--border);
+    --iti-hover-color: var(--surface-muted);
+    --iti-icon-color: var(--text-muted);
+}
+.iti__country-selector {
+    border-radius: 0.75rem !important;
+    box-shadow: var(--shadow-lg) !important;
+    color: var(--text);
+    overflow: hidden;
+}
+.iti__search-input {
+    background-color: var(--surface-raised) !important;
+    color: var(--text) !important;
+}
+.iti__country.iti__highlight { background-color: var(--surface-muted) !important; }
+.iti__dial-code { color: var(--text-muted) !important; }
+
+.leaflet-container {
+    font-family: var(--font-sans);
+    background: var(--surface-sunken);
+}
+
+/* Leaflet's own chrome, themed to match. The .leaflet-bar wrapper carries
+   its own #ddd, which showed through as a light strip between the buttons. */
+.leaflet-bar,
+.leaflet-control-zoom a,
+.leaflet-control-attribution {
+    background: var(--surface-raised) !important;
+    color: var(--text-muted) !important;
+    border-color: var(--border) !important;
+}
+
+.leaflet-bar { box-shadow: var(--shadow-md) !important; }
+.leaflet-control-zoom a:hover { background: var(--surface-muted) !important; color: var(--text) !important; }
+.leaflet-control-attribution a { color: var(--text-muted) !important; }
+
+/* Tooltips and popups Leaflet draws over the map ship white with a white
+   arrow; on the dark map they were the last light patch left. */
+.leaflet-tooltip,
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+    background: var(--surface-raised) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+.leaflet-tooltip-top:before { border-top-color: var(--surface-raised) !important; }
+.leaflet-tooltip-bottom:before { border-bottom-color: var(--surface-raised) !important; }
+.leaflet-tooltip-left:before { border-left-color: var(--surface-raised) !important; }
+.leaflet-tooltip-right:before { border-right-color: var(--surface-raised) !important; }
+[data-theme='dark'] .leaflet-tile-pane { filter: brightness(0.78) contrast(1.06) saturate(0.85); }

@@ -1,0 +1,30 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "smoke": "node tests/Browser/shell-smoke.cjs",
+        "smoke:booking": "node tests/Browser/booking-flow.cjs",
+        "smoke:parcel": "node tests/Browser/parcel-wizard.cjs"
+    },
+    "devDependencies": {
+        "@tailwindcss/forms": "^0.5.11",
+        "@tailwindcss/vite": "^4.3.3",
+        "axios": "^1.20.0",
+        "concurrently": "^9.0.1",
+        "laravel-vite-plugin": "^2.0.0",
+        "puppeteer": "^24.43.1",
+        "tailwindcss": "^4.3.3",
+        "vite": "^7.0.7"
+    },
+    "dependencies": {
+        "@alpinejs/collapse": "^3.17.1",
+        "@alpinejs/focus": "^3.17.1",
+        "@alpinejs/persist": "^3.17.1",
+        "alpinejs": "^3.17.1",
+        "intl-tel-input": "^29.2.3",
+        "leaflet": "^1.9.4"
+    }
+}

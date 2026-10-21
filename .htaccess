@@ -1,0 +1,13 @@
+<IfModule mod_rewrite.c>
+    Options -MultiViews
+    RewriteEngine On
+
+    # Block hidden files like .env and .git
+    RewriteRule (^|/)\.(?!well-known) - [F,L]
+
+    # Leave the other panels alone
+    RewriteRule ^(admin|dispatcher_panel)(/.*)?$ - [L]
+
+    # Send everything else to Laravel's public folder
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
