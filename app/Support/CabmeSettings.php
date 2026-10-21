@@ -205,6 +205,16 @@ class CabmeSettings
         return $this->get('web_panel_url') ?: null;
     }
 
+    public function appStoreLink(): ?string
+    {
+        return $this->get('web_app_store_link') ?: $this->get('app_store_link') ?: null;
+    }
+
+    public function playStoreLink(): ?string
+    {
+        return $this->get('web_play_store_link') ?: $this->get('play_store_link') ?: null;
+    }
+
     public function footerDescription(): ?string
     {
         return $this->get('web_footer_description') ?: null;
@@ -246,5 +256,15 @@ class CabmeSettings
             'buttonText' => trim((string) ($cookie['buttonText'] ?? '')) ?: 'Got it',
             'policyUrl' => trim((string) ($cookie['policyUrl'] ?? '')),
         ];
+    }
+
+    public function __get(string $name): mixed
+    {
+        return $this->get($name);
+    }
+
+    public function __isset(string $name): bool
+    {
+        return $this->get($name) !== null;
     }
 }
